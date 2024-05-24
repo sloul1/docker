@@ -1,3 +1,3 @@
 # docker
 
-docker-compose.yaml files for containerization
+Docker configurations related.
