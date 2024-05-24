@@ -1,4 +1,6 @@
-# This shell script is created according to Docker's official documentation. https://docs.docker.com/engine/install/ubuntu/                                                            
+# This shell script is created for Ubuntu according to Docker's official documentation.
+https://docs.docker.com/engine/install/ubuntu/                                                            
+# Tested on Ubuntu 22.04 Workstation and Server
 
 # Choose bash for command interpreter
 #!/bin/bash
