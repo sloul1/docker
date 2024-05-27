@@ -1,0 +1,71 @@
+Version: '3'
+
+# This Pi-hole-Unbound configuration can be used with Traefik proxy. https://doc.traefik.io/traefik/
+# Uncomment "labels:" and lines under if you're using Traefik proxy with Pi-hole.
+
+# More info at https://github.com/pi-hole/docker-pi-hole/ and https://docs.pi-hole.net/
+networks:
+  dns_net:
+    driver: bridge
+    ipam:
+        config:
+        - subnet: 172.23.0.0/16
+  traefik_traefik: 
+    external: true # When using "external: true", the external network should be created before starting this container.
+
+services:
+  pihole:
+    container_name: pihole
+    hostname: pihole
+    image: pihole/pihole:latest # remember to change this if you're using rpi
+    networks:
+      dns_net:
+        ipv4_address: 172.23.0.7
+      traefik_traefik:
+    ports:
+      - "53:53/tcp"
+      - "53:53/udp"
+      - "85:80/tcp"
+    #- "443:443/tcp"
+    environment:
+      TZ: 'Europe/Helsinki'
+    #  WEBPASSWORD: 'secure password here or it will be random' # Uncomment this line to set a password for Pi-hole web interface.
+      PIHOLE_DNS_: '172.23.0.8#5053'
+    # Volumes store your data between container upgrades
+    volumes:
+      - '/home/user/docker/pihole-unbound/etc-pihole/:/etc/pihole/'
+      - '/home/user/docker/pihole-unbound/etc-dnsmasq.d/:/etc/dnsmasq.d/'
+    restart: unless-stopped
+    
+    # Labels for Traefik proxy. Uncomment "labels:" and lines under if you're using Traefik proxy with Pi-hole.
+    # https://docs.pi-hole.net/guides/webserver/traefik-v2-docker/
+    
+    #labels:
+    #  - "traefik.enable=true"
+    #  - "traefik.http.routers.pihole.entrypoints=http"
+    #  - "traefik.http.routers.pihole.rule=Host(`pihole.local.yourdomain.tld`)"
+    #  - "traefik.http.middlewares.pihole-https-redirect.redirectscheme.scheme=https"
+    #  - "traefik.http.routers.pihole.middlewares=pihole-https-redirect"
+    #  - "traefik.http.routers.pihole-secure.entrypoints=https"
+    #  - "traefik.http.routers.pihole-secure.rule=Host(`pihole.local.yourdomain.tld`)"
+    #  - "traefik.http.routers.pihole-secure.tls=true"
+    #  - "traefik.http.routers.pihole-secure.service=pihole"
+    #  - "traefik.http.services.pihole.loadbalancer.server.port=80"
+    #  - "traefik.docker.network=traefik_traefik"
+  
+  # "Unbound is a validating, recursive, caching DNS resolver."
+  # https://www.nlnetlabs.nl/projects/unbound/about/
+  unbound:
+    container_name: unbound
+    image: mvance/unbound:latest # remember to change this if you're using rpi
+    networks:
+      dns_net:
+        ipv4_address: 172.23.0.8
+    volumes:
+      - /home/user/docker/unbound:/opt/unbound/etc/unbound
+    ports:
+      - "5053:53/tcp"
+      - "5053:53/udp"
+    healthcheck:
+      test: ["NONE"]
+    restart: unless-stopped
