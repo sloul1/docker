@@ -1,7 +1,9 @@
-Create .env file and insert two variables:
+Create .env file and edit it with nano or text editor of your own choice:
 ```shell
 touch .env && nano .env
-
+```
+Insert two variables that are referred in docker-compose.yml file.
+```shell
 YOUR_DNS_API_TOKEN=<insert your dns api token here without brackets>
 MAIL=<insert your mail address here without brackets>
 ```
