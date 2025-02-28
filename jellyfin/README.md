@@ -3,7 +3,7 @@
 ## Reset Jellyfin admin password
 
 > [!IMPORTANT]
-> You need to be in the same network with Jellyfin server.
+> You need to be on the same network with Jellyfin server.
 
 - Stop the container
 - Change `config/system.xml` file line `"IsSetupWizardComplete"` value to `"false"`
